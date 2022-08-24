@@ -177,6 +177,7 @@ function checkoutGuestByFloor(inputCheckoutGuestByFloor){
 
 function bookByFloor(inputBookByFloor){
     keyCardsAll.sort()
+    availableRoom.sort()
     let count = 0
     let RoombyFloor = []
     let keyCardRoombyFloor = []

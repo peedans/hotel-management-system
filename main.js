@@ -72,6 +72,7 @@ function main() {
   const commands = getCommandsFromFileName(filename);
 
   commands.forEach((command) => {
+    console.log(command)
     switch (command.name) {
       case "create_hotel":
         const [floor, roomPerFloor] = command.params;
