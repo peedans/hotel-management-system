@@ -1,64 +1,5 @@
 const fs = require("fs");
 
-let hotel = []
-let availableRoom = []
-let notAvailableRoom = []
-function createRoom(inputFloor,inputNumber) {
-  for( let i = 1 ; i <= inputFloor;i++){
-    for( let j = 1 ; j <= inputNumber;j++){
-      let jString = j.toString()
-      if(jString.length == 1){
-        jString = jString.padStart(2,"0")
-      }
-      hotel.push([i]+[jString])
-      availableRoom.push([i]+[jString])
-    }
-  }
-}
-
-function checkin(inputHotel){
-  let booked
-  if(inputHotel) {
-    booked = availableRoom[availableRoom.indexOf(inputHotel)]
-    availableRoom.splice(availableRoom.indexOf(inputHotel),1)
-    notAvailableRoom.push(booked);
-    return
-  }
-  booked = availableRoom.shift();
-  notAvailableRoom.push(booked);
-}
-checkin(hotel)
-
-function menu (input,param){
-  switch(input){
-      //สร้างโรงแรมโดยกำหนดจำนวนชั้นและจำนวนห้องต่อชั้นได้
-    case "create_hotel" :
-      createRoom(inputFloor = param[0],  inputNumber = param[1])
-      break;
-    case "book" :
-      break;
-    case "list-available_rooms" :
-      break;
-    case "checkout" :
-      break;
-    case "list_guest" :
-      break;
-    case "get_guest_in_room" :
-      break;
-    case "list_guest_by_age" :
-      break;
-    case "checkout_guest_by_floor" :
-      break;
-    case "book_by_floor" :
-      break;
-
-
-    default :
-      break;
-  }
-}
-
-
 class Command {
   constructor(name, params) {
     this.name = name;
@@ -66,27 +7,171 @@ class Command {
   }
 }
 
-
 function main() {
   const filename = "input.txt";
   const commands = getCommandsFromFileName(filename);
-
+    let hotelRoomAll = []
+    let availableRoom = []
+    let notAvailableRoom = []
+    let guestHotel ={}
+    let keyCards = []
+    let listGuest = []
   commands.forEach((command) => {
-    console.log(command)
     switch (command.name) {
       case "create_hotel":
         const [floor, roomPerFloor] = command.params;
-        const hotel = { floor, roomPerFloor };
-        console.log(`Hotel created with ${floor} floor(s), ${roomPerFloor} room(s) per floor.`);
-        for (let key of commands){
-          menu(Object.values(key)[0] ,Object.values(key)[1])
-
+        for(let i = 1 ; i <= floor ; i++){
+            for(let j = 1 ; j <= roomPerFloor ; j++){
+                let iString = j.toString()
+                if ( iString.length === 1  ) {
+                    let iSplice = iString.padStart(2, "0")
+                    hotelRoomAll.push([i] + iSplice)
+                    availableRoom.push([i] + iSplice)
+                }
+            }
         }
-        return;
-      default:
-        return;
+        for(let i = 1 ; i <= hotelRoomAll.length ; i ++){
+              keyCards.push(i)
+        }
+        break;
+        case "book" :
+            keyCards.sort()
+            const [guestRoom,guestName,guestAge] = command.params
+            let guestRoomString = guestRoom.toString()
+            if (notAvailableRoom.includes(guestRoomString)){
+                console.log(`Cannot book room ${guestRoom} for ${guestName}, The room is currently booked by ${guestHotel[guestRoom]["guestName"]}.`)
+            }else if (availableRoom.length > 0  ) {
+                checkIn = availableRoom[availableRoom.indexOf(guestRoomString)]
+                availableRoom.splice(availableRoom.indexOf(guestRoomString), 1)
+                notAvailableRoom.push(checkIn)
+            }
+            guestHotel[checkIn] ={
+            guestRoom : guestRoom,
+            guestName :guestName,
+            guestAge : guestAge,
+                keyCards :  keyCards.shift(),
+        }
+            listGuest.push(guestName)
+            console.log(`Room ${guestHotel[guestRoom]["guestRoom"]} is booked by ${guestHotel[guestRoom]["guestName"]} with keycard number ${guestHotel[guestRoom]["keyCards"]}.`)
+
+        break;
+        case "list_available_rooms" :
+            console.log(`${availableRoom}`)
+            break;
+        case "checkout" :
+            const [keyCard,guestNameCheckOut] = command.params
+            for ( let key in guestHotel){
+                if(guestHotel[key]["keyCards"] === keyCard && guestHotel[key]["guestName"] === guestNameCheckOut){
+                    let guestHotelString =guestHotel[key]["guestRoom"].toString()
+                    let checkOut = notAvailableRoom[notAvailableRoom.indexOf(guestHotelString)]
+                    notAvailableRoom.splice(notAvailableRoom.indexOf(guestHotelString),1)
+                    availableRoom.push(guestHotel[key]["guestRoom"])
+                    keyCards.push(guestHotel[key]["keyCards"]);
+
+                    let guestNameCheckOutString = guestNameCheckOut.toString()
+                    listGuest.splice(listGuest.indexOf(guestNameCheckOutString),1)
+
+                    delete guestHotel[key]
+
+                    console.log(`Room ${checkOut} is checkout`)
+
+                }else if (guestHotel[key]["keyCards"] === keyCard && guestHotel[key]["guestName"] !== guestNameCheckOut){
+                    console.log(`Only ${guestHotel[key]["guestName"]} can checkout with keycard number ${guestHotel[key]["keyCards"]}.`)
+                }
+            }
+            break;
+        case "list_guest" :
+            let newListGuest =  [...new Set(listGuest)]
+            console.log(`${newListGuest}`)
+            break;
+        case "get_guest_in_room" :
+            const [getGuestInRoom] = command.params
+            console.log(guestHotel[getGuestInRoom]["guestName"])
+            break;
+        case "list_guest_by_age" :
+            const [inequality,age] = command.params
+            let GuestByAge = []
+            for (let key in guestHotel){
+                if(inequality === "<"){
+                    if (guestHotel[key]["guestAge"] < age){
+                        GuestByAge.push(guestHotel[key]["guestName"])
+                    }
+                }
+                if(inequality === ">"){
+                    if (guestHotel[key]["guestAge"] > age){
+                        GuestByAge.push(guestHotel[key]["guestName"])
+                    }
+                }
+            }
+            console.log(`${GuestByAge}`)
+            break;
+        case "list_guest_by_floor" :
+            const [GuestByFloor] = command.params
+            let ListGuestByFloor = GuestByFloor * 100
+            let endListGuestByFloor = (GuestByFloor+1) *100
+            let guestFloor = [];
+            for (let key in guestHotel){
+                if( key > ListGuestByFloor  &&  key < endListGuestByFloor) {
+                    guestFloor.push(guestHotel[key]["guestName"])
+                }
+            }
+            console.log(`${guestFloor}`)
+            break;
+        case "checkout_guest_by_floor" :
+            const [checkoutGuestByFloor] = command.params
+            let StartCheckoutGuestByFloor = checkoutGuestByFloor * 100
+            let endCheckoutGuestByFloor = (checkoutGuestByFloor+1) *100
+            let outGuestByFloor = []
+            let outGuestByRoom = []
+            for (let key in guestHotel){
+                if ( key > StartCheckoutGuestByFloor  && key < endCheckoutGuestByFloor){
+                    outGuestByFloor.push([guestHotel[key]["keyCards"],guestHotel[key]["guestName"]])
+                    outGuestByRoom.push(guestHotel[key]["guestRoom"])
+                }
+            }
+            for(let i = 1  ; i <= outGuestByFloor.length ; i++){
+                if(guestHotel[StartCheckoutGuestByFloor+i]["keyCards"] === outGuestByFloor[i-1][0] && guestHotel[StartCheckoutGuestByFloor+i]["guestName"] === outGuestByFloor[i - 1][1]){
+                    notAvailableRoom.splice(notAvailableRoom.indexOf(guestHotel[StartCheckoutGuestByFloor + i]["guestRoom"],1))
+                    availableRoom.push(guestHotel[StartCheckoutGuestByFloor + i]["guestRoom"])
+                    keyCards.push(guestHotel[StartCheckoutGuestByFloor + i]["keyCards"])
+
+                    delete guestHotel[StartCheckoutGuestByFloor + i]
+                }
+            }
+            console.log(`Room ${outGuestByRoom} are checkout.`)
+            break;
+        case "book_by_floor" :
+            const [bookFloor,bookName,bookAge]= command.params
+            keyCards.sort()
+            availableRoom.sort()
+            let count = 0
+            let roomByFloor = []
+            let keyCardRoombyFloor = []
+            availableRoom.map(room =>{
+                if(room > bookFloor*100 && room < (bookFloor+1)*100 ){
+                    count++
+                    roomByFloor.push(room)
+                }
+            })
+            if( count === 3){
+                for( let i = 0 ; i < count ; i++){
+                    let checkInByFloor = availableRoom[availableRoom.indexOf(roomByFloor[i])]
+                    availableRoom.splice(availableRoom.indexOf(roomByFloor[i]),1)
+                    notAvailableRoom.push(checkInByFloor)
+                    keyCardRoombyFloor.push(keyCards.shift())
+                }
+                console.log(`Room ${roomByFloor} are booked with keycard number ${keyCardRoombyFloor} `)
+            }else{
+                console.log(`Cannot book floor ${bookFloor} for ${bookName}.`)
+            }
+
+            break;
+        default :
+            break;
+
     }
   });
+
 }
 
 
@@ -110,6 +195,5 @@ function getCommandsFromFileName(fileName) {
 }
 
 main();
-console.log(hotel)
-console.log(availableRoom)
+
 

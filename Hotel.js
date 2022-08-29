@@ -24,7 +24,6 @@ let data =
     Command ={ name: '', params: [] }
 ]
 
-
 let guestRoom = {}
 let listguest = []
 let keyCardsAll = []
@@ -37,7 +36,6 @@ function keyCard(input){
         keyCardsAll.push(i)
     }
 }
-
 
 function createRoom(inputFloor,inputNumber) {
     for( let i = 1 ; i <= inputFloor;i++){
@@ -54,7 +52,6 @@ function createRoom(inputFloor,inputNumber) {
     return `Hotel created with ${inputFloor} floor(s), ${inputNumber} room(s) per floor.`
 }
 
-
 function checkAvailableRoom(inputCheckAvailableRoom){
     if(notAvailableRoom.includes(inputCheckAvailableRoom[0])){
         return `Cannot book room ${inputCheckAvailableRoom[0]} for ${inputCheckAvailableRoom[1]}, The room is currently booked by ${guestRoom[inputCheckAvailableRoom[0]]["guestName"]}.`
@@ -68,10 +65,10 @@ function checkAvailableRoom(inputCheckAvailableRoom){
     }
 }
 
-
 function checkin(inputHotel){
     keyCardsAll.sort()
     availableRoom.sort()
+    console.log(inputHotel[1])
     let booked ;
         booked = availableRoom[availableRoom.indexOf(inputHotel[0])]
         availableRoom.splice(availableRoom.indexOf(inputHotel[0]),1)
@@ -90,8 +87,6 @@ function checkin(inputHotel){
     return `Room ${guestRoom[booked]["roomNumber"]} is booked by ${guestRoom[booked]["guestName"]} with keycard number ${guestRoom[booked]["keyCards"]}.`
 }
 
-
-
 function checkout(Checkout){
     for ( let key in guestRoom) {
         if(guestRoom[key]["keyCards"] === Checkout[0] && guestRoom[key]["guestName"] === Checkout[1]){
@@ -103,7 +98,6 @@ function checkout(Checkout){
             listguest.splice(listguest.indexOf(guestRoom[key]["guestName"]),1)
 
             delete guestRoom[key]
-
 
             return `Room ${returnRoom} is checkout`
 
@@ -168,7 +162,7 @@ function checkoutGuestByFloor(inputCheckoutGuestByFloor){
             availableRoom.push(guestRoom[CheckoutGuestByFloor + i]["roomNumber"])
             keyCardsAll.push(guestRoom[CheckoutGuestByFloor + i]["keyCards"]);
 
-            delete guestRoom[CheckoutGuestByFloor + i]["roomNumber"]
+            delete guestRoom[CheckoutGuestByFloor + i]
         }
 
     }
