@@ -68,7 +68,6 @@ function checkAvailableRoom(inputCheckAvailableRoom){
 function checkin(inputHotel){
     keyCardsAll.sort()
     availableRoom.sort()
-    console.log(inputHotel[1])
     let booked ;
         booked = availableRoom[availableRoom.indexOf(inputHotel[0])]
         availableRoom.splice(availableRoom.indexOf(inputHotel[0]),1)
