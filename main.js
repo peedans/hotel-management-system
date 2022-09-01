@@ -1,3 +1,4 @@
+
 const fs = require("fs");
 
 class Command {
@@ -40,11 +41,14 @@ function main() {
             let guestRoomString = guestRoom.toString()
             if (notAvailableRoom.includes(guestRoomString)){
                 console.log(`Cannot book room ${guestRoom} for ${guestName}, The room is currently booked by ${guestHotel[guestRoom]["guestName"]}.`)
-            }else if (availableRoom.length > 0  ) {
-                checkIn = availableRoom[availableRoom.indexOf(guestRoomString)]
-                availableRoom.splice(availableRoom.indexOf(guestRoomString), 1)
-                notAvailableRoom.push(checkIn)
+                break
             }
+            if(availableRoom.includes(guestRoomString)){
+                    checkIn = availableRoom[availableRoom.indexOf(guestRoomString)]
+                    availableRoom.splice(availableRoom.indexOf(guestRoomString), 1)
+                    notAvailableRoom.push(checkIn)
+            }
+
             guestHotel[checkIn] ={
             guestRoom : guestRoom,
             guestName :guestName,
