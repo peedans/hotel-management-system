@@ -40,6 +40,7 @@ function main() {
             let guestRoomString = guestRoom.toString()
             if (notAvailableRoom.includes(guestRoomString)){
                 console.log(`Cannot book room ${guestRoom} for ${guestName}, The room is currently booked by ${guestHotel[guestRoom]["guestName"]}.`)
+              break
             }else if (availableRoom.length > 0  ) {
                 checkIn = availableRoom[availableRoom.indexOf(guestRoomString)]
                 availableRoom.splice(availableRoom.indexOf(guestRoomString), 1)
