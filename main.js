@@ -1,4 +1,3 @@
-
 const fs = require("fs");
 
 class Command {
@@ -34,6 +33,7 @@ function main() {
         for(let i = 1 ; i <= hotelRoomAll.length ; i ++){
               keyCards.push(i)
         }
+        console.log(`Hotel created with ${floor} floor(s), ${roomPerFloor} room(s) per floor.`)
         break;
         case "book" :
             keyCards.sort()
@@ -43,7 +43,7 @@ function main() {
                 console.log(`Cannot book room ${guestRoom} for ${guestName}, The room is currently booked by ${guestHotel[guestRoom]["guestName"]}.`)
                 break
             }
-            if(availableRoom.includes(guestRoomString)){
+            if(availableRoom.length > 0){
                     checkIn = availableRoom[availableRoom.indexOf(guestRoomString)]
                     availableRoom.splice(availableRoom.indexOf(guestRoomString), 1)
                     notAvailableRoom.push(checkIn)
@@ -145,12 +145,14 @@ function main() {
             console.log(`Room ${outGuestByRoom} are checkout.`)
             break;
         case "book_by_floor" :
+
             const [bookFloor,bookName,bookAge]= command.params
             keyCards.sort()
             availableRoom.sort()
             let count = 0
             let roomByFloor = []
             let keyCardRoombyFloor = []
+            let checkInHotel = []
             availableRoom.map(room =>{
                 if(room > bookFloor*100 && room < (bookFloor+1)*100 ){
                     count++
@@ -160,15 +162,25 @@ function main() {
             if( count === 3){
                 for( let i = 0 ; i < count ; i++){
                     let checkInByFloor = availableRoom[availableRoom.indexOf(roomByFloor[i])]
+                    checkInHotel.push(checkInByFloor)
                     availableRoom.splice(availableRoom.indexOf(roomByFloor[i]),1)
                     notAvailableRoom.push(checkInByFloor)
                     keyCardRoombyFloor.push(keyCards.shift())
+
                 }
                 console.log(`Room ${roomByFloor} are booked with keycard number ${keyCardRoombyFloor} `)
             }else{
                 console.log(`Cannot book floor ${bookFloor} for ${bookName}.`)
+                break
             }
-
+            for (let i = 0 ; i < count ; i++){
+                guestHotel[checkInHotel[i]] = {
+                    guestRoom : checkInHotel[i],
+                    guestName :bookName,
+                    guestAge : bookAge,
+                    keyCards :  keyCardRoombyFloor[i],
+                }
+            }
             break;
         default :
             break;

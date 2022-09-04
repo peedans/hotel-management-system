@@ -148,7 +148,7 @@ function checkoutGuestByFloor(inputCheckoutGuestByFloor){
     let endCheckoutGuestByFloor = (inputCheckoutGuestByFloor[0]+1) *100
     let outGuestByFloor = []
     let outGuestRoom = []
-    for (key in guestRoom){
+    for (let key in guestRoom){
         if ( key > CheckoutGuestByFloor  && key < endCheckoutGuestByFloor){
             outGuestByFloor.push([guestRoom[key]["keyCards"],guestRoom[key]["guestName"]])
             outGuestRoom.push(guestRoom[key]["roomNumber"])
